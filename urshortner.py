@@ -9,11 +9,11 @@ import os
 
 app = Flask(__name__)
 
-# Data storage file path
+
 DATA_FILE = "url_data.json"
 LOCK = threading.Lock()
 
-# Load or initialize URL data store
+
 if os.path.exists(DATA_FILE):
     with open(DATA_FILE, "r") as f:
         try:
@@ -23,13 +23,13 @@ if os.path.exists(DATA_FILE):
 else:
     url_store = {}
 
-# Save to file with thread safety
+
 def save_data():
     with LOCK:
         with open(DATA_FILE, "w") as f:
             json.dump(url_store, f, indent=2)
 
-# Generate a unique short code
+
 def generate_short_code(length=6):
     chars = string.ascii_letters + string.digits
     while True:
@@ -37,7 +37,6 @@ def generate_short_code(length=6):
         if code not in url_store:
             return code
 
-# Validate URL
 def is_valid_url(url):
     try:
         result = urlparse(url)
@@ -45,11 +44,9 @@ def is_valid_url(url):
     except:
         return False
 
-# Routes
-
 @app.route('/')
 def index():
-    # Serve the frontend single HTML with inline CSS and JS
+    
     return render_template_string("""
 <!DOCTYPE html>
 <html lang="en">
@@ -1016,12 +1013,12 @@ def api_urls():
     global url_store
     data = request.json
     if request.method == 'GET':
-        # Return all URLs except archived
+        
         all_urls = [dict(shortCode=k, **v) for k, v in url_store.items() if not v.get('archived', False)]
         return jsonify(urls=all_urls)
 
     elif request.method == 'POST':
-        # Create new short URL
+        
         orig_url = data.get('originalUrl', '')
         if not orig_url or not is_valid_url(orig_url):
             return jsonify(error='Invalid URL'), 400
